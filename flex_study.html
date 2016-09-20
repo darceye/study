@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>t</title>
+    <style type="text/css">
+        html,body{
+            height: 100%;
+        }
+        .in1 {
+            order: 0;
+            flex-grow: 1;
+            border: 1px solid green;
+        }
+        .in2 {
+            order: 0;
+            flex-grow: 2;
+            flex-shrink: 0;
+            flex-basis: 120px; /* 内容物 属性 4: flex-basis 分配多余空间前占用的空间，与width/height一致则固定）*/
+            /* 内容物 属性 5: flex = flex-grow +  flex-shrink + flex-basis */
+            border: 1px solid blue;
+            text-align: center;
+        }
+        .in3 {
+            order: 0; /* 内容物 属性 1：order 排列顺序，自然数，默认0 */
+            flex-grow: 3; /* 内容物 属性 2: flex-grow 比例，自然数，与同一行相比占用空余空间多少。默认0则不占空余空间。*/
+            flex-shrink: 1; /* 内容物 属性 3:  flex-shrink 是否被挤压收缩，0 不收缩，1 收缩（默认）*/
+            border: 1px solid yellow;
+            align-self: stretch; /* 内容物 属性 6: 继承align-items, 这儿单独修改，取值同align-items */
+        }
+        #ct {
+            height: 100%;
+            display: flex; /* 容器组件 属性 1：flex 后，所有内部都flex */
+
+            flex-flow: row wrap;  /* 容器组件 属性 2 3 4： flex-flow = flex-direction + flex-wrap;
+            row横向排列，column纵向排列，row-reverse/column-reverse逆向排列， 
+            wrap表示换行，nowrap不换行，wrap-reverse从下向上排列换行*/
+
+            /*以下属性以flex-direction: row举例，也就是按行排列 */
+
+            justify-content: flex-start;  /* 容器组件 属性 5: flex-start 左对齐、flex-end 右对齐、center 左右中间对齐、
+            space-between左右无空分散对齐、space-around左右留空分散对齐 */
+
+            align-items: flex-start; /*容器组件 属性 6：（单行的内容之间）flex-start 上对齐、flex-end 下对齐、center 上下中间对齐、
+            strench 上下拉伸撑满、baseline 首行文字对齐 */
+            align-content: stretch; /*容器组件 属性 7：（多行之间）flex-start 所有行靠上、flex-end 所有行靠下，center 所有行居中、
+            strench 所有行上下拉伸撑满、 space-between行间上下无空分散对齐、space-around行间上下留空分散对齐 */
+            
+            border: 1px solid red;
+        }
+    </style>
+</head>
+<body>
+    <div id='ct'>
+        outer
+        <div class='in1'>in199999</div>
+        <div class='in2'>in299999</div>
+        <div class='in2'>in399999</div>
+        <div class='in2'>in199999</div>
+        <div class='in2'>in299999</div>
+        <div class='in2'>in399999</div>
+        <div class='in2'>in199999</div>
+        <div class='in2'>in299999</div>
+        <div class='in2'>in399999</div>
+        <div class='in2'>in199999</div>
+        <div class='in2'>in299999</div>
+        <div class='in2'>in399999</div>
+        <div class='in3'>in199999</div>
+        <div class='in3'>in299999</div>
+        <div class='in3'>in399999</div>
+        <div class='in3'>in199999</div>
+        <div class='in3'>in299999</div>
+        <div class='in3'>in399999</div>
+        <div class='in3'>in199999</div>
+        <div class='in3'>in299999</div>
+        <div class='in3'>in399999</div>
+        <div class='in1'>in199999</div>
+        <div class='in1'>in299999</div>
+        <div class='in1'>in399999</div>
+        <div class='in1'>in199999</div>
+        <div class='in2'>in299999</div>
+        <div class='in2'>in399999</div>
+        <div class='in2'>in199999</div>
+        <div class='in2'>in299999</div>
+        <div class='in3'>in399999</div>
+        <div class='in3'>in199999</div>
+        <div class='in3'>in299999</div>
+        <div class='in3'>in399999</div>
+
+    </div>
+</body>
+</html>

@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{title}}</title>
+    <meta charset="utf-8">
+    <script src='vue.js'></script>
+    <style type="text/css">
+        .c1{
+            font-size: 20px;
+        }
+        .c2{
+            color: red;
+        }
+        .c3{
+            background: yellow;
+        }
+    </style>
+</head>
+<body>
+    <div id='app'>  <!-- Vue tech 1: use DIV/id to define. -->
+        <input type='text' v-model="title">
+        {{msg}}  <!-- vue tech 3, use {{xxx}} for data2html  -->
+        <input v-model='msg' /> <!-- vue tech 4, use v-model in input for html2data -->
+        <ul>
+            <li v-for="todo in todos"> <!-- vue tech 5, use v-for to iterate every child of a data obj(should be an array). 
+            command is defined in a string 'xx in xxs', xx is a child defined here, xxs is father obj defined in data-->
+                {{ todo.text }} <!-- vue tech 5.1, use 'xx.key' to display value of child. -->
+                <button v-on:click='vue_tech_6_3($index)'>vue_tech_6_3</button>  
+                <!-- vue tech 7, use $index to send index of v-for to method. '$index' is predefined by vue. -->
+            </li>
+            <li v-for='(i, todo) of todos'> <!-- vue tech 5.1, i is alias name for $index. 'of' is alias for 'in'. -->
+                {{i +". "+todo.text}}
+            </li>
+
+            <p> vue tech 5.2, some array methods will update view. </p>
+            <button @click='m_push'>push()</button>
+            <button @click='m_pop'>pop()</button>
+            <button @click='m_shift'>shift()</button>
+            <button @click='m_unshift'>unshift()</button>
+            <button @click='m_splice_del'>splice(3,1)</button>
+            <button @click='m_splice_add'>splice(3,0, new)</button>
+            <button @click='m_sort'>sort()</button>
+            <button @click='m_reverse'>reverse()</button>
+            <p> vue tech 5.3, array[0]=xx doesn't update view, use array.$set(0, xx). </p>
+            <button @click='m_set0'>$set(0,xx)</button>
+            其他array方法包括filter, concat, slice
+        </ul>
+        <ul>
+            vue tech 5.3, v-for can use for obj, not only for array. $key is for key of obj.
+            <li v-for='value of objs'>
+                {{ $key }}, {{ value }}
+            </li>
+            vue tech 5.4, $key can also have a alias name
+            <li v-for='(k,v) of objs'>
+                {{k}}: {{v}}
+            </li>
+            vue tech 5.5, to repeat simply.
+            <li v-for='n of 5'>
+                {{ n }}
+            </li> 
+
+        </ul>
+        <button v-on:click='vue_tech_6'>vue tech 6</button> <!-- vue tech 6, v-on is for event listening. 
+        'click' is one of events. format is 'v-on:xx_event'. its value is method name defined in methods -->
+        <input v-on:keyup.enter='vue_tech_6_2' placeholder="vue tech 6.2, using keyboard enter" v-model='msg6_2'> <br>
+        <button @click='say(msg6_2, $event)'>vue tech 6.3, @click can send params, and $event. </button>
+        <!-- vue tech 6.2, using keyboard enter. maybe only for 'input'  -->
+        <p v-if='bool8'>vue tech 8</p>  <!-- vue tech 8, use v-if (a boolean) to show/hide a html element -->
+        <br>
+        <button v-on:click='vue_tech_8'>vue_tech_8</button>
+        <button v-on:click="change_title">change title</button>
+        <p>{{ watch_on_msg }}</p>
+        <p> {{* one_time_msg }} </p>    <!-- vue_tech 12, use '*' to make msg don't change. -->
+        <textarea v-model='html_msg' style='height: 100px;width: 400px '></textarea>
+        <p> {{{ html_msg }}} </p>  <!-- vue tech 13, {{{ xxx }}} can use data as html -->
+        <p id='it_is_{{ msg }}' class="cls_{{ msg }}">vue tech 14, change id/class</p>    
+        <!-- vue tech 14, id/class/etc can also be bond to data. 
+        they can be changed. use it to change class.  -->
+        <p> <input v-model='value' /> + 100 = {{ parseInt(value) + 100 }} </p>
+        <!-- vue tech 15,  {{ js expression }} is ok. it means js expression can be inserted in to html. -->
+        <p> vue tech 16, pipe(not work). {{ msg | capitalize }} </p>
+        <!-- vue tech 16, pipe '|' to filter. capitalize is defined by vue. but it didn't work.... -->
+        <input v-model='url'/><br>
+        <a v-bind:href='url'>vue tech 17, v-bind:href='xxx' adds prop to html element, url is in data. </a> <br>
+        <a href='{{url}}'>vue tech 17.1, it is same as href='{ {xxx}}' .</a> <br><br>
+        <a v-bind:href.literal='http://baidu.com'></a> <!-- vue tech 18, '.literal' for 'v-' command, 
+        is to forbid find vulue in data, and just use value as its 'literal' -->
+        <a :href='url'>vue tech 18, v-bind:href='xxx' is same as :href='xxx' </a> <br>
+        <button @click=''>vue tech 18.1, v-on:click='xxx' is same as @click='xxx' </button> <br>
+        <p> <input v-model='value'> + 100 = {{ computed_value }} </p>
+        <p> <input v-model='brand'/> <input v-model='model'/> <input v-model='brand_model'> </p>
+        <input v-model='isC2' placeholder="input or not" /><input v-model='isC3' placeholder="input or not"/>
+        <div class='c1' v-bind:class= "{ 'c2':isC2, 'c3':isC3 }" >
+            vue tech 20, use data to change class. use an obj to discribe class and use a bool data for its on/off.
+        </div>
+        <div class='c1' v-bind:class= "v_20_class_bind_data" >
+            vue tech 20.1, the obj can be defined in data.
+        </div>
+        <div class='c1' v-bind:class= "v_20_2_class_bind_computed" >
+            vue tech 20.2, the obj can be defined in computed.
+        </div>
+        <div class='c1' v-bind:class= "[data_c2, data_c3]" >
+            vue tech 20.3, the obj can be an array, children of array are defined in data.
+        </div>
+        <div class='c1' v-bind:class= "[data_c2, isC3?data_c3:'']" >
+            vue tech 20.4, the obj can be an array, children of array are defined in data.
+        </div>
+        <div class='c1' v-bind:style="{color: dataColor, background:'#'+d_red+d_blue+d_green}">
+            vue tech 21, bind a style, the value of a style prop can be a data.
+        </div>
+        <div class='c1' v-bind:style="styleObj">
+            vue tech 21.1, bind a style, use a data obj.
+        </div>
+        <div class='c1' v-bind:style="[styleObj, styleObj2] ">
+            vue tech 21.2, bind a style, use a data obj array.
+        </div>
+        <label><input type="checkbox" v-model='isOk' />vue tech 22, v-if/v-else is for 
+        display or hide element according to data</label>
+        <h1 v-if='isOk'> Yes </h1>
+        <h1 v-else> No </h1>
+        <h2 v-show='isOk'> Vue tech 22.1, v-show is similar to v-if. </h2> 
+        <h2 v-else> Vue tech 22.1, v-show can use v-else, too. </h2> 
+        v-show costs less CPUs than v-if.
+        <div id='t_event'>
+        outside DOM2 event, js tech 6
+            <div id='t_event_inside'>
+            inside DOM2 event, js tech 6
+            </div>
+        </div>
+        <a href="http://www.baidu.com" target="_blank" id='default_event'>default_event, to baidu.com, js tech 7</a><br>
+        <a href="http://www.baidu.com" target="_blank" id='preventDefault_event'>preventDefault_event, js tech 7</a>
+        <p> vue tech 23, v-on:click.stop.prevent.capture.self, is for stopPropagation, preventDefault, capture event, and just self event. </p>
+        <input @keyup.enter='keyup_enter'/> vue tech 23, v-on:keyup.enter <br>
+        <input @keyup='keyup_all'/> vue tech 23.1, v-on:keyup, print e.key
+
+        <big-component></big-component> <!-- vue tech 24. important! compaonent -->
+        <big-c2></big-c2>
+        <big-c3 msg='it is msg of big-c3'></big-c3><!-- vue tech 24.4, send sth into component -->
+
+        
+
+        <br><br><br>
+    </div>
+    <script type="text/javascript">
+        // vue tech 24. define component. use template for h5.
+        let myComponent1 = Vue.extend({
+            template: '<div>vue tech 24, component, should be defined before vm created.</div>'
+        })
+
+        // vue tech 24.1, define bigger component, smaller are registed inside its components.
+        let bigComponent = Vue.extend({
+            template: '<div>it\'s a big one</div> <my-component1></my-component1>',
+            components: {
+                'my-component1': myComponent1
+            }
+
+        })
+
+        //vue tech 24.2, regist bigger commponent globally.
+        Vue.component('big-component', bigComponent)
+
+        //vue tech 24.3, anonymous(easier way) to define component in registration.
+        Vue.component('big-c2', {
+            template: '<p>it is big -c2</p>'
+        })
+
+        Vue.component('big-c3', {
+            template: '6666 {{msg}} 6666',
+            props: ['msg'], //vue tech 24.4, define props here.
+
+        })
+
+
+        let vm = new Vue({   ////vue tech 2: use a object {} to send param.
+            el: '#app', //Vue tech 1: use id to define.('css like' grammar) 'el' is short for element.
+            data: {     //Vue tech 3: use data to deine dada.
+                title: 'title',
+                msg: 'Vue Tech 3', //Vue Tech 3, use {{xx}} for data to html
+                msg6_2: 'msg6_2',
+                bool8: true,
+                todos: [
+                    {text: 'vue tech 5'},
+                    {text: 'vue tech 5.1'}
+                ],  //js tip 1, don't forget comma ',' between children
+                objs: {
+                    name: "jackson",
+                    age: 31,
+                    male: true
+                },
+                watch_on_msg: '',
+                one_time_msg: 'vue tech 11, msg will not change',
+                html_msg: '<div style="color:red"> abc </div>',
+                value: 1,
+                url: '',
+                brand: 'apple',
+                model: 'iphone6sp',
+                isC2: true,
+                isC3: true,
+                v_20_class_bind_data: { 'c2':true, 'c3':true },
+                data_c2: 'c2',
+                data_c3: 'c3',
+                dataColor: 'green',
+                bcColor: 'blue',
+                d_red: 'f',
+                d_blue: 'e',
+                d_green: '3',
+                styleObj: {color: 'green' },
+                styleObj2: {background: "#fe3"},
+                isOk: true,
+
+            },
+            methods: {  //vue tech 6, define methods which is used by 'v-on'
+                vue_tech_6: function(){ //vue tech 6.1, format is 'method_name: function(){xxxxx }'
+                    this.msg = 'vue tech 6' //js tech 2, use 'this' to find data defined in 'data'
+                },
+                vue_tech_6_2: function(){
+                    
+                    this.todos.push({text: this.msg6_2.trim()}) 
+                    // js tech 3: use some_array.push(xx) to push a obj to the end of an array
+                    // js tech 4: use some_string.trim() to trim spaces before and after a string. 
+
+                },
+                vue_tech_6_3: function(index){ 
+                    console.log('vt6.3')
+                     // vue tech 7, use $index to send index of v-for to method. '$index' is predefined by vue. 
+                    this.todos.splice(index, 1) //js tech 5, an_array.splice(from, count) is used to delete an obj of an array.
+                },
+                vue_tech_8: function(){
+                    console.log(this.bool8)
+                    this.bool8 ? this.bool8=false : this.bool8=true //to change v-if status
+                },
+                change_title: function() {
+                    document.title = this.msg
+                },
+                m_pop: function() {
+                    this.todos.pop()
+                },
+                m_push: function() {
+                    this.todos.push({text: 'pushed into end.'})
+                },
+                m_shift: function() {
+                    this.todos.shift()
+                },
+                m_unshift: function() {
+                    this.todos.unshift({text: 'unshifted into front.'})
+                },
+                m_splice_del: function() {
+                    this.todos.splice(3,1)
+                },
+                m_splice_add: function() {
+                    this.todos.splice(3,0,{text: 'spliced add into middle.'})
+                },
+                m_sort: function() {
+                    this.todos.sort()
+                },
+                m_reverse: function() {
+                    this.todos.reverse()
+                },
+                m_set0: function() {
+                    this.todos.$set(0, {text: 'i have been set.'})
+                },
+                say(msg) {  //vue tech 6.3 @click to send params, should not have a function()
+                    alert(msg)
+                },
+                keyup_enter: function() {
+                    console.log('enter key')
+                },
+                keyup_all: function(e) {
+                    console.log(e.key)
+                }
+                
+                
+            },
+            created: function() {   //vue tech 11, it will be callback when a vue instance is created.
+                console.log('vue tech 11, created callback')
+                console.log('vue tech 11.1, this.msg = ' + this.msg) //vue tech 11.1, use 'this' to access vue instance
+            },
+            beforeCompile: function () {
+                console.log('vue tech 11.2, beforeCompile callback')
+            },
+            compiled: function() {
+                console.log('vue tech 11.2.1, compiled callback')
+            },
+            ready: function() {
+                console.log('vue tech 11.3, ready callback')
+            },
+            beforeDestory: function() {
+                console.log('vue tech 11.4, beforeDestory callback')
+            },            
+            destroyed: function() {
+                console.log('vue tech 11.4.1, destroyed callback')
+            },
+            computed: { // vue tech 19, {{ expression }} is simple. for a complexer value, use 'computed'
+                        // and return a value. in fact, kit's a function name, not a value.
+                        // when data changes, the computed value also changes.
+                computed_value: function(){
+                    return parseInt(this.value) + 100
+
+                },
+                brand_model: {  //vue tech 19.1 , computed value for both get and set.  
+                    get: function() {
+                        return this.brand + ' ' + this.model;
+
+                    },
+                    set: function(newValue) {
+                        let a = newValue.split(' ')
+                        this.brand = a[0]
+                        if (a.length > 0)
+                        {
+                            this.model = a[1]
+                        }
+                    }
+
+                },
+                v_20_2_class_bind_computed: function() {
+                    return {'c2': true, 'c3': true}
+                },
+
+            }
+        })
+
+        console.log('vm.msg is data.msg') // vue tech 9,
+        console.log('vm.$data is data') // vue tech 9.1,
+        console.log('vm.$el is document.getElementById(app)') // vue tech 9.2
+
+        vm.$watch('msg', function(newVal, oldVal){  
+        //vue tech 10, vm.$watch is a function which is listening data changing event. when changed, and callback function.
+            console.log('msg changes' + newVal)
+            vm.watch_on_msg = 'vue tech 10, msg changed from ' +oldVal + ' to ' + newVal
+        })
+
+        // js tech 6, DOM2 event. use addEventListener/removeEventListener("eventname", function(e), boolean) to add/remove event.
+        // DOM2 event has capture(true) and propagation(bubble up, false) events. 
+        // capture event of a child will be send from its father and father's father... these fathers will capture the event.
+        // propagation event for a child will be send from child to its father and father's father...
+        // e.stopPropagation() will just add a event to itself ,not bubble to these fathers.
+        // boolean is false means propagation event.
+        let btn = document.getElementById('t_event')
+        let btn_inside = document.getElementById('t_event_inside')
+        btn.addEventListener("click", function(e) {
+            alert("it\'s a bulb[outside][1] event. ")
+
+        }, false)
+
+        btn.addEventListener("click", function(e){
+            alert('it\'s a capture[outside][1] event')
+        }, true)
+        btn.addEventListener("click", function(e) {
+            alert("it\'s a bulb[outside][2] event. ")
+
+        }, false)
+
+        btn.addEventListener("click", function(e){
+            alert('it\'s a capture[outside][2] event')
+        }, true)
+
+        btn_inside.addEventListener("click", function(e) {
+            alert("it\'s a bulb[inside][1] event. ")
+
+        }, false)
+
+        btn_inside.addEventListener("click", function(e){
+            alert('it\'s a capture[inside][1] event')
+        }, true)
+        btn_inside.addEventListener("click", function(e) {
+            alert("it\'s a bulb[inside][2] event. stopPropagation. ")
+            e.stopPropagation()
+        }, false)
+
+        btn_inside.addEventListener("click", function(e){
+            alert('it\'s a capture[inside][2] event')
+        }, true)
+
+        // js tech 7, preventDefault.
+        js_tech_7 = document.getElementById('preventDefault_event')
+        js_tech_7.onclick = function(e) {
+            alert('default event: link to baidu is prevented.')
+            e.preventDefault()
+        }
+
+
+    </script>
+</body>
+</html>
